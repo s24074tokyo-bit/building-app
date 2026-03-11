@@ -205,3 +205,8 @@ export  const initialForm: FormDataType = {
 
   userId: undefined,
 };
+
+export type StructureRequest = FormDataType & {
+  id: string
+  createdAt?: any
+}
