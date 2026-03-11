@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { FormDataType, initialForm } from "@/types/form";
@@ -117,7 +117,7 @@ export default function StructureRequestPage() {
   }
 
   return (
-
+    <Suspense>
     <div className="min-h-screen bg-blue-50 p-8 flex flex-col">
 
       {/* ===== メインコンテンツ ===== */}
@@ -212,5 +212,6 @@ export default function StructureRequestPage() {
         </div>
       )}
     </div>
+    </Suspense>
   );
 }
