@@ -136,7 +136,7 @@ export default function StructureRequestPage() {
         {step === 5 && <Step5 form={form} update={update} />}
         {step === 6 && (
           isAdmin
-            ?<AdminConfirm form ={form}/>
+            ?<AdminConfirm form ={form} isAdmin={isAdmin}/>
             :<Confirm form={form}/>
         )}
       </div>
