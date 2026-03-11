@@ -1,8 +1,17 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 
 export default function CompletePage() {
+  return (
+    <Suspense>
+      <CompleteContent />
+    </Suspense>
+  );
+}
+
+function CompleteContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
