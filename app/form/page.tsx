@@ -105,17 +105,22 @@ function StructureRequestPage() {
     }));
   };
 
-  const handleSubmit = async () => {
-    if (!auth.currentUser) return;
+const handleSubmit = async () => {
+  const user = auth.currentUser;
 
-    const docRef = await addDoc(collection(db, "structureRequests"), {
-      ...form,
-      userId: auth.currentUser.uid,
-      createdAt: serverTimestamp(),
-    });
+  if (!user) {
+    alert("ログインしてください");
+    return;
+  }
 
-    router.push(`/form/complete?id=${docRef.id}`);
-  };
+  const docRef = await addDoc(collection(db, "structureRequests"), {
+    ...form,
+    userId: user.uid,
+    createdAt: new Date(),
+  });
+
+  router.push(`/form/complete?id=${docRef.id}`);
+};
 
   if (step === null) {
     return (
