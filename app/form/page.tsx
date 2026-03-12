@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-dynamic"
-
 import React, { useState, useEffect, Suspense } from "react";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
@@ -17,7 +15,15 @@ import Step5 from "./components/Step5";
 import Confirm from "./components/Confirm";
 import AdminConfirm from "./components/AdminConfirm"
 
-export default function StructureRequestPage() {
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <StructureRequestPage />
+    </Suspense>
+  );
+}
+
+function StructureRequestPage() {
   const [step, setStep] = useState<number | null>(null);
   const [form, setForm] = useState<FormDataType>(initialForm);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -35,6 +41,7 @@ export default function StructureRequestPage() {
       setStep(1);
       return
     }
+    if (typeof window === "undefined") return;
 
     const fetchData = async () => {
       const docRef = doc(db, "structureRequests", id);
@@ -119,7 +126,6 @@ export default function StructureRequestPage() {
   }
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-blue-50 p-8 flex flex-col">
 
       {/* ===== メインコンテンツ ===== */}
@@ -214,6 +220,5 @@ export default function StructureRequestPage() {
         </div>
       )}
     </div>
-    </Suspense>
   );
 }
