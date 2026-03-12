@@ -119,7 +119,7 @@ export default function StructureRequestPage() {
   }
 
   return (
-    <Suspense>
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="min-h-screen bg-blue-50 p-8 flex flex-col">
 
       {/* ===== メインコンテンツ ===== */}

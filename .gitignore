@@ -43,3 +43,5 @@ next-env.d.ts
 scripts/*.json
 
 serviceAccountKey.json
+
+.env.local
