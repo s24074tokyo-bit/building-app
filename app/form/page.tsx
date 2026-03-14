@@ -13,7 +13,7 @@ import Step3 from "./components/Step3";
 import Step4 from "./components/Step4";
 import Step5 from "./components/Step5";
 import Confirm from "./components/Confirm";
-import AdminConfirm from "./components/AdminConfirm"
+//import AdminConfirm from "./components/AdminConfirm"
 
 export default function Page() {
   return (
@@ -154,11 +154,7 @@ const handleSubmit = async () => {
           />
         )}
         {step === 5 && <Step5 form={form} update={update} />}
-        {step === 6 && (
-          isAdmin
-            ?<AdminConfirm form ={form} isAdmin={isAdmin}/>
-            :<Confirm form={form}/>
-        )}
+        {step === 6 && <Confirm form={form} isAdmin={isAdmin}/>}
       </div>
 
       {/* ===== 下部ナビ（管理者は非表示） ===== */}
