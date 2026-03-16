@@ -105,29 +105,29 @@ function StructureRequestPage() {
     }));
   };
 
-const handleSubmit = async () => {
-  try {
-    const user = auth.currentUser;
+  const handleSubmit = async () => {
+    try {
+      const user = auth.currentUser;
 
-    if (!user) {
-      alert("ログインしてください");
-      return;
+      if (!user) {
+        alert("ログインしてください");
+        return;
+      }
+
+      const docRef = await addDoc(collection(db, "structureRequests"), {
+        ...form,
+        userId: user.uid,
+        createdAt: serverTimestamp(),
+      });
+
+      console.log("保存成功", docRef.id);
+
+      router.push(`/form/complete?id=${docRef.id}`);
+
+    } catch (error) {
+      console.error("保存エラー", error);
     }
-
-    const docRef = await addDoc(collection(db, "structureRequests"), {
-      ...form,
-      userId: user.uid,
-      createdAt: serverTimestamp(),
-    });
-
-    console.log("保存成功", docRef.id);
-
-    router.push(`/form/complete?id=${docRef.id}`);
-
-  } catch (error) {
-    console.error("保存エラー", error);
-  }
-};
+  };
 
   if (step === null) {
     return (
@@ -154,7 +154,7 @@ const handleSubmit = async () => {
           />
         )}
         {step === 5 && <Step5 form={form} update={update} />}
-        {step === 6 && <Confirm form={form} isAdmin={isAdmin}/>}
+        {step === 6 && <Confirm form={form} isAdmin={isAdmin} />}
       </div>
 
       {/* ===== 下部ナビ（管理者は非表示） ===== */}
@@ -163,24 +163,32 @@ const handleSubmit = async () => {
 
           {/* Stepナビ */}
           <div className="flex justify-center gap-3 text-sm font-semibold">
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <button
-                key={num}
-                onClick={() => setStep(num)}
-                className={`
-                  w-9 h-9
-                  rounded-full
-                  flex items-center justify-center
-                  transition-all duration-200
-                  ${step === num
-                    ? "bg-blue-600 text-white shadow-md scale-110"
-                    : "bg-gray-200 text-gray-600 hover:bg-blue-100"
-                  }
-                `}
-              >
-                {num}
-              </button>
-            ))}
+            {[1, 2, 3, 4, 5, 6].map((num) => {
+              const isConfirm = num === 6;
+
+              return (
+                <button
+                  key={num}
+                  onClick={() => setStep(num)}
+                  className={`
+          w-9 h-9
+          rounded-full
+          flex items-center justify-center
+          transition-all duration-200
+          ${step === num
+                      ? isConfirm
+                        ? "bg-emerald-600 text-white shadow-md scale-110"
+                        : "bg-blue-600 text-white shadow-md scale-110"
+                      : isConfirm
+                        ? "bg-emerald-200 text-emerald-700 hover:bg-emerald-300"
+                        : "bg-gray-200 text-gray-600 hover:bg-blue-100"
+                    }
+        `}
+                >
+                  {isConfirm ? "確認" : num}
+                </button>
+              );
+            })}
           </div>
 
           {/* 戻る・次へ */}

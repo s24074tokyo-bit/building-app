@@ -77,6 +77,20 @@ export default function Step3({ form, update }: any) {
                     />
                 </Field>
 
+                <Field label="■ 基準風速">
+                    <div className="flex items-center gap-2">
+                        <input
+                            className={inputStyle}
+                            value={form.design?.baseWindSpeed ?? ""}
+                            onChange={(e) =>
+                                update("design", "baseWindSpeed", e.target.value)
+                            }
+                        />
+                        <span className="text-blue-900">m/s</span>
+                    </div>
+                </Field>
+
+
                 {/* ■ 積雪区分 */}
                 <Field label="■ 積雪区分">
                     <div className="space-y-2">
@@ -94,18 +108,71 @@ export default function Step3({ form, update }: any) {
                 </Field>
 
                 {/* ■ 積雪量 */}
-                <Field label="■ 積雪量">
-                    <div className="flex items-center gap-2">
-                        <input
-                            className={inputStyle}
-                            value={form.design?.snowAmount ?? ""}
-                            onChange={(e) =>
-                                update("design", "snowAmount", e.target.value)
-                            }
-                        />
-                        <span className="text-blue-900">cm</span>
-                    </div>
-                </Field>
+                {form.design?.snowRegion === "多雪地域" && (
+                    <>
+                        {/* ■ 積雪量 */}
+                        <Field label="■ 積雪量">
+                            <div className="flex items-center gap-2">
+                                <input
+                                    className={inputStyle}
+                                    value={form.design?.snowAmount ?? ""}
+                                    onChange={(e) =>
+                                        update("design", "snowAmount", e.target.value)
+                                    }
+                                />
+                                <span className="text-blue-900">cm</span>
+                            </div>
+                        </Field>
+
+                        {/* ■ 雪下ろしの適応 */}
+                        <Field label="■ 雪下ろしの適応">
+                            <div className="flex items-center gap-4">
+                                <label className="flex items-center gap-1">
+                                    <input
+                                        type="radio"
+                                        name="snowRemovalApplicable"
+                                        value="yes"
+                                        checked={form.design?.snowRemovalApplicable === "yes"}
+                                        onChange={(e) =>
+                                            update("design", "snowRemovalApplicable", e.target.value)
+                                        }
+                                    />
+                                    適応する
+                                </label>
+
+                                <label className="flex items-center gap-1">
+                                    <input
+                                        type="radio"
+                                        name="snowRemovalApplicable"
+                                        value="no"
+                                        checked={form.design?.snowRemovalApplicable === "no"}
+                                        onChange={(e) =>
+                                            update("design", "snowRemovalApplicable", e.target.value)
+                                        }
+                                    />
+                                    適応しない
+                                </label>
+                            </div>
+                        </Field>
+
+                        {/* ■ 雪下ろし後の積雪量 */}
+                        {form.design?.snowRemovalApplicable === "yes" && (
+                            <Field label="■ 雪下ろし後の積雪量">
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        className={inputStyle}
+                                        value={form.design?.snowAmountAfterRemoval ?? ""}
+                                        onChange={(e) =>
+                                            update("design", "snowAmountAfterRemoval", e.target.value)
+                                        }
+                                    />
+                                    <span className="text-blue-900">cm</span>
+                                </div>
+                            </Field>
+                        )}
+                    </>
+                )}
+
 
                 {/* ■ その他伝達事項欄 */}
                 <Field label="■ その他伝達事項欄">
@@ -145,7 +212,7 @@ export default function Step3({ form, update }: any) {
                 </Field>
 
                 {/* 未記載の場合のみ表示 */}
-                {form.foundation?.did === "未記載" && (
+                {form.foundation?.did !== "記載済み" && (
                     <>
                         {/* ■ 基礎形状 */}
                         <Field label="■ 基礎形状">
@@ -170,12 +237,12 @@ export default function Step3({ form, update }: any) {
                                         update("foundation", "frost", v)
                                     }
                                     options={[
-                                        "有る",
+                                        "有り",
                                         "無し",
                                     ]}
                                 />
 
-                                {form.foundation?.frost === "有る" && (
+                                {/*{form.foundation?.frost === "有り" && (
                                     <div className="flex items-center gap-2">
                                         <input
                                             className={inputStyle}
@@ -186,7 +253,7 @@ export default function Step3({ form, update }: any) {
                                         />
                                         <span className="text-blue-900">cm</span>
                                     </div>
-                                )}
+                                )}*/}
                             </div>
                         </Field>
 
@@ -199,12 +266,12 @@ export default function Step3({ form, update }: any) {
                                         update("foundation", "deep", v)
                                     }
                                     options={[
-                                        "有る",
+                                        "有り",
                                         "無し",
                                     ]}
                                 />
 
-                                {form.foundation?.deep === "有る" && (
+                                {/*{form.foundation?.deep === "有り" && (
                                     <div className="flex items-center gap-2">
                                         <input
                                             className={inputStyle}
@@ -215,7 +282,7 @@ export default function Step3({ form, update }: any) {
                                         />
                                         <span className="text-blue-900">cm</span>
                                     </div>
-                                )}
+                                )}*/}
                             </div>
                         </Field>
 

@@ -56,7 +56,8 @@ export default function Step1({ form, update }: Props) {
                     />
                 </Field>
 
-                {/* ■ 依頼会社と異なる場合の会社名 */}
+                {/* ■ 依頼会社と異なる場合の会社名 
+                
                 <Field label="■ 依頼会社と異なる場合の会社名">
                     <div className="space-y-2">
                         <input
@@ -71,6 +72,7 @@ export default function Step1({ form, update }: Props) {
                         </div>
                     </div>
                 </Field>
+                */}
 
                 {/* ■ 電話番号 */}
                 <Field label="■ 電話番号">

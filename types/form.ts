@@ -1,7 +1,7 @@
- export type MaterialItem = {
-    material: string;
-    section:string;
-    note:string; 
+export type MaterialItem = {
+  material: string;
+  section: string;
+  note: string;
 };
 
 export type FormDataType = {
@@ -9,7 +9,7 @@ export type FormDataType = {
     companyName: string;
     projectName: string;
     personInCharge: string;
-    differentCompany: string;
+    //differentCompany: string;
     phone: string;
     note: string;
   };
@@ -52,8 +52,11 @@ export type FormDataType = {
     otherContent: string;
     seismicPerformance: string;
     windPerformance: string;
+    baseWindSpeed: string;
     snowRegion: string;
     snowAmount: string;
+    snowRemovalApplicable: string
+    snowAmountAfterRemoval: string
     note: string;
   };
 
@@ -61,9 +64,9 @@ export type FormDataType = {
     did: string;
     shape: string;
     frost: string;
-    frostValue: string;
+    //frostValue: string;
     deep: string;
-    deepValue: string;
+    //deepValue: string;
     high: string;
     highValue: string;
     note: string;
@@ -77,7 +80,7 @@ export type FormDataType = {
 
   materials: {
     reference: string;
-    previousBuilding: string;
+    howTo: string;
 
     foundation: MaterialItem;
     girder: MaterialItem;
@@ -90,9 +93,12 @@ export type FormDataType = {
   };
 
   wall: {
-    outer: string;
-    inner: string;
-    note: string;
+    layout: string;        // 外周耐力壁の配置
+    outer: string;         // 外周耐力面材
+    outerOther: string;    // 外周「その他」入力
+    inner: string;         // 内部耐力面材
+    innerOther: string;    // 内部「その他」入力
+    note: string;          // 伝達事項
   };
 
   delivery: {
@@ -103,14 +109,15 @@ export type FormDataType = {
   };
 
   userId?: string;
+  createdAt?: any;
 };
 
-export  const initialForm: FormDataType = {
+export const initialForm: FormDataType = {
   customer: {
     companyName: "",
     projectName: "",
     personInCharge: "",
-    differentCompany: "",
+    //differentCompany: "",
     phone: "",
     note: "",
   },
@@ -151,10 +158,17 @@ export  const initialForm: FormDataType = {
   design: {
     method: "",
     otherContent: "",
+
     seismicPerformance: "",
     windPerformance: "",
+    baseWindSpeed: "",        // 基準風速
+
     snowRegion: "",
     snowAmount: "",
+
+    snowRemovalApplicable: "", // 雪下ろしの適応 (yes / no)
+    snowAmountAfterRemoval: "", // 雪下ろし後の積雪量
+
     note: "",
   },
 
@@ -162,9 +176,9 @@ export  const initialForm: FormDataType = {
     did: "",
     shape: "",
     frost: "",
-    frostValue: "",
+    //frostValue: "",
     deep: "",
-    deepValue: "",
+    //deepValue: "",
     high: "",
     highValue: "",
     note: "",
@@ -178,7 +192,7 @@ export  const initialForm: FormDataType = {
 
   materials: {
     reference: "",
-    previousBuilding: "",
+    howTo: "",
 
     foundation: { material: "", section: "", note: "" },
     girder: { material: "", section: "", note: "" },
@@ -191,8 +205,11 @@ export  const initialForm: FormDataType = {
   },
 
   wall: {
+    layout: "",
     outer: "",
+    outerOther: "",
     inner: "",
+    innerOther: "",
     note: "",
   },
 
@@ -204,6 +221,7 @@ export  const initialForm: FormDataType = {
   },
 
   userId: undefined,
+  createdAt: undefined
 };
 
 export type StructureRequest = FormDataType & {

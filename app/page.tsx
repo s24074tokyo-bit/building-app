@@ -55,11 +55,11 @@ export default function HomePage() {
 
         setData(list);
       }
-      ,(error) => {
-        if(error.code === "permission-denied") return;
-        console.error(error);
-      }
-    );
+        , (error) => {
+          if (error.code === "permission-denied") return;
+          console.error(error);
+        }
+      );
     });
 
     return () => {
@@ -90,6 +90,17 @@ export default function HomePage() {
         >
           ＋ 新規作成
         </button>
+      </div>
+      
+      <div className="w-[65%] bg-pink-50 border border-pink-200 text-pink-600 text-sm font-medium px-4 py-3 rounded-lg space-y-1">
+        <p>・可能な範囲で入力してください</p>
+        <p>・入力方法がわからない場合、みやび設計までお問い合わせください</p>
+        <p>・構造図書作成時の間違えの防止・効率化にご協力ください</p>
+      </div>
+
+      <div className="flex items-center gap-2 text-sky-500 text-sm font-medium bg-sky-50 px-4 py-2 rounded-lg">
+        <span>📄</span>
+        <p>下記より過去物件を選択し、複製して新規依頼書が作成できます</p>
       </div>
 
       {/* レポート用紙風 親カード */}

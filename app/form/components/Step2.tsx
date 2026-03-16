@@ -12,7 +12,7 @@ export default function Step2({ form, update }: any) {
         <>
             <div className={sectionStyle}>
                 <h2 className="text-xl font-bold text-blue-900 border-b border-blue-300 pb-2">
-                    ③ 建物情報①
+                    ③ 建物情報その１
                 </h2>
 
                 <div className="text-sm text-blue-800">
@@ -100,19 +100,19 @@ export default function Step2({ form, update }: any) {
                 </Field>
             </div>
             {/* =========================================================
-                ④ 建物情報②
+                ④ 建物情報
             ========================================================== */}
 
             <div className={sectionStyle}>
                 <h2 className="text-xl font-bold text-blue-900 border-b border-blue-300 pb-2">
-                    ④ 建物情報②
+                    ④ 建物情報その２
                 </h2>
 
                 <div className="text-sm text-blue-800">
                     （依頼書作成依頼）
                 </div>
 
-                <Field label="■ 意匠図に記載されているか (未記載の場合、質問項目が表示されます)">
+                <Field label="■ 意匠図に記載されているか">
                     <Select
                         value={form.building2?.did ?? ""}
                         onChange={(v: string) =>
@@ -124,8 +124,11 @@ export default function Step2({ form, update }: any) {
                         ]}
                     />
 
-                    {form.building2?.did === "未記載" && (
+                    {form.building2?.did !== "記載済み" && (
                         <>
+                            <h3 className="text-base font-semibold text-blue-700 border-b border-blue-200 pb-1 mt-4">
+                                ■ 構造高さ情報
+                            </h3>
                             <Field label="■ 平均GL〜設計GL">
                                 <div className="flex items-center gap-2">
                                     <input
@@ -246,6 +249,9 @@ export default function Step2({ form, update }: any) {
                             )}
 
                             {/* ■ 1階床厚 */}
+                            <h3 className="text-base font-semibold text-blue-700 border-b border-blue-200 pb-1 mt-6">
+                                ■ 床厚情報
+                            </h3>
                             <Field label="■ 1階床厚">
                                 <div className="flex items-center gap-2">
                                     <input
@@ -292,7 +298,7 @@ export default function Step2({ form, update }: any) {
                             )}
 
                             {/* ■ その他伝達事項欄 */}
-                            <Field label="■ その他伝達事項欄">
+                            <Field label="■ その他伝達事項欄　(建物情報その２について)">
                                 <textarea
                                     className={textareaStyle}
                                     value={form.building2?.note ?? ""}
