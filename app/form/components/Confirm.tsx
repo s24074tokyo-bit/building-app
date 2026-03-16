@@ -33,13 +33,14 @@ export default function AdminPrintSheet({ form, isAdmin }: Props) {
             {/* ================= 1ページ目 ================= */}
             <div className="page">
                 <h1 className="title">構造依頼書</h1>
-
+                {isAdmin &&(
                 <div className="text-sm text-blue-700">
                     作成日 :
                     {created
                         ? created.toLocaleString("ja-JP")
                         : ""}
                 </div>
+                )}
 
 
 
