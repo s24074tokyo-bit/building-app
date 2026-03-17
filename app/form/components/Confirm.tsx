@@ -361,7 +361,7 @@ function PrintStyle() {
       }
 
       body {
-        font-family: "Times New Roman", serif;
+        font-family: "sans-serif";
       }
 
 
@@ -436,7 +436,7 @@ function PrintStyle() {
       }
 
       th {
-        background: #00AEEF;
+        background: #72cbeb;
         width: 35%;
       }
 
