@@ -9,7 +9,7 @@ type Props = {
     isAdmin: boolean;
 };
 
-export default function AdminPrintSheet({ form, isAdmin }: Props) {
+export default function AdminConfirm({ form, isAdmin }: Props) {
     const handleDownloadPDF = () => {
         window.print();
     };
