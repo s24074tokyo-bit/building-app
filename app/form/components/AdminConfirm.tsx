@@ -9,7 +9,7 @@ type Props = {
     isAdmin: boolean;
 };
 
-export default function AdminConfirm({ form, isAdmin }: Props) {
+export default function Confirm({ form, isAdmin }: Props) {
     const handleDownloadPDF = () => {
         window.print();
     };
@@ -116,9 +116,7 @@ export default function AdminConfirm({ form, isAdmin }: Props) {
             {/* ================= 2ページ目 ================= */}
             <div className="page">
 
-                {/* ================= ⑥ 基礎条件 ================= */}
-
-                                {/* ================= ⑤ 設計条件 ================= */}
+                {/* ================= ⑤ 設計条件 ================= */}
                 <SectionTitle title="⑤ 設計条件" />
                 <KeyValueTable
                     data={[
@@ -134,6 +132,7 @@ export default function AdminConfirm({ form, isAdmin }: Props) {
                     ]}
                 />
 
+                {/* ================= ⑥ 基礎条件 ================= */}
                 <SectionTitle title="⑥ 基礎条件" />
                 <KeyValueTable
                     data={[
@@ -230,6 +229,7 @@ export default function AdminConfirm({ form, isAdmin }: Props) {
                             <Copy size={18} className="text-gray-600" />
                         )}
                     </button>
+
                 </div>
 
             </div>
@@ -381,12 +381,22 @@ function PrintStyle() {
   position: absolute;
   inset: 0;
 
-  background-image: url("/company-logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 55%;
+  background-image:
+    url("/company-logo.png"),
+    url("/company-logo.png");
 
-  opacity: 0.06;   /* ←薄さ調整 */
+  background-repeat: repeat;
+
+  /* ロゴサイズ */
+  background-size: 140px 140px, 140px 140px;
+
+  /* ここがキモ（半分ズラす） */
+  background-position:
+    0 0,
+    70px 70px;
+
+  opacity: 0.05;
+
   pointer-events: none;
   z-index: 0;
 }
@@ -410,7 +420,7 @@ function PrintStyle() {
       }
 
       table {
-        width: 95%;
+        width: 100%;
         border-collapse: collapse;
         font-size: 12px;
         margin-bottom: 6px;

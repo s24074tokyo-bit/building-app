@@ -381,12 +381,22 @@ function PrintStyle() {
   position: absolute;
   inset: 0;
 
-  background-image: url("/company-logo.png");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 55%;
+  background-image:
+    url("/company-logo.png"),
+    url("/company-logo.png");
 
-  opacity: 0.06;   /* ←薄さ調整 */
+  background-repeat: repeat;
+
+  /* ロゴサイズ */
+  background-size: 140px 140px, 140px 140px;
+
+  /* ここがキモ（半分ズラす） */
+  background-position:
+    0 0,
+    70px 70px;
+
+  opacity: 0.05;
+
   pointer-events: none;
   z-index: 0;
 }
@@ -410,7 +420,7 @@ function PrintStyle() {
       }
 
       table {
-        width: 95%;
+        width: 100%;
         border-collapse: collapse;
         font-size: 12px;
         margin-bottom: 6px;
