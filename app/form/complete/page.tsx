@@ -1,7 +1,9 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
+import { auth } from "@/lib/firebase"
+
 
 export default function CompletePage() {
   return (
@@ -15,6 +17,19 @@ function CompleteContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const id = searchParams.get("id");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAdmin = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const token = await user.getIdTokenResult();
+      setIsAdmin(token.claims.admin === true);
+    };
+
+    checkAdmin();
+  }, []);
 
   if (!id) {
     return (
@@ -71,22 +86,22 @@ function CompleteContent() {
 
         {/* ボタン */}
         <div className="flex flex-col gap-4">
-          
+
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push(isAdmin ? "/admin" : "/")}
             className="
-              w-full
-              py-3
-              rounded-xl
-              border border-blue-200
-              text-blue-700
-              bg-white
-              font-medium
-              transition-all duration-200
-              hover:bg-blue-50
-            "
+    w-full
+    py-3
+    rounded-xl
+    border border-blue-200
+    text-blue-700
+    bg-white
+    font-medium
+    transition-all duration-200
+    hover:bg-blue-50
+  "
           >
-            ホームへ戻る
+            {isAdmin ? "管理画面へ" : "ホームへ戻る"}
           </button>
         </div>
       </div>

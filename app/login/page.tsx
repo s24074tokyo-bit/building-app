@@ -1,40 +1,49 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function LoginPage() {
 
-  const [email,setEmail] = useState("");
-  const [password,setPassword] = useState("");
-  const [message,setMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
 
   const router = useRouter();
 
   const handleLogin = async () => {
 
-    try{
+    try {
 
-      await signInWithEmailAndPassword(auth,email,password);
+      await signInWithEmailAndPassword(auth, email, password);
 
       const user = auth.currentUser;
 
-      if(!user){
+      if (!user) {
         console.log("未ログイン");
         return;
       }
 
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          email: user.email,
+        },
+        { merge: true } // ←既存なら上書きしない
+      );
+
       const tokenResult = await user.getIdTokenResult();
 
-      if(tokenResult.claims.admin){
+      if (tokenResult.claims.admin) {
         router.push("/admin");
-      }else{
+      } else {
         router.push("/");
       }
 
-    }catch(error:any){
+    } catch (error: any) {
       setMessage(error.message);
     }
 
@@ -54,7 +63,7 @@ export default function LoginPage() {
           placeholder="メールアドレス"
           className="w-full border p-2 rounded"
           value={email}
-          onChange={(e)=>setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
@@ -62,7 +71,7 @@ export default function LoginPage() {
           placeholder="パスワード"
           className="w-full border p-2 rounded"
           value={password}
-          onChange={(e)=>setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         {message && (

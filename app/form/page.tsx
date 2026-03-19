@@ -32,6 +32,8 @@ function StructureRequestPage() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
+  const targetUserId = searchParams.get("targetUserId");
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [step]);
@@ -108,7 +110,7 @@ function StructureRequestPage() {
   const handleSubmit = async () => {
     try {
       const user = auth.currentUser;
-
+      
       if (!user) {
         alert("ログインしてください");
         return;
@@ -116,8 +118,9 @@ function StructureRequestPage() {
 
       const docRef = await addDoc(collection(db, "structureRequests"), {
         ...form,
-        userId: user.uid,
+        userId: targetUserId ?? user.uid,
         createdAt: serverTimestamp(),
+        createdBy: user.uid
       });
 
       console.log("保存成功", docRef.id);
@@ -138,7 +141,7 @@ function StructureRequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-50 p-8 flex flex-col">
+    <div className="min-h-screen p-8 flex flex-col">
 
       {/* ===== メインコンテンツ ===== */}
 
@@ -165,7 +168,6 @@ function StructureRequestPage() {
       </div>
 
       {/* ===== 下部ナビ（管理者は非表示） ===== */}
-      {!isAdmin && (
         <div className="mt-auto pt-10 space-y-6">
 
           {/* Stepナビ */}
@@ -241,7 +243,6 @@ function StructureRequestPage() {
 
           </div>
         </div>
-      )}
     </div>
   );
 }

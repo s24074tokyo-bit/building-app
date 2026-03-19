@@ -110,6 +110,7 @@ export type FormDataType = {
 
   userId?: string;
   createdAt?: any;
+  createdBy?: string;
 };
 
 export const initialForm: FormDataType = {
@@ -221,10 +222,12 @@ export const initialForm: FormDataType = {
   },
 
   userId: undefined,
-  createdAt: undefined
+  createdAt: undefined,
+  createdBy: undefined
 };
 
 export type StructureRequest = FormDataType & {
   id: string
   createdAt?: any
+  createdBy?: string
 }

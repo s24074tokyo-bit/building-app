@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { collection, query, orderBy, onSnapshot, deleteDoc, doc } from "firebase/firestore"
+import { collection, query, orderBy, onSnapshot, deleteDoc, doc, snapshotEqual } from "firebase/firestore"
 import { auth, db } from "@/lib/firebase"
 import { useRouter } from "next/navigation"
 import { StructureRequest } from "@/types/form"
@@ -12,6 +12,8 @@ export default function AdminHomePage() {
     const [data, setData] = useState<StructureRequest[]>([])
     const [loading, setLoading] = useState(true)
     const router = useRouter()
+    const [users, setUsers] = useState<{ uid: string; email: string }[]>([]);
+    const [selectedUser, setSelectedUser] = useState("");
 
     const handleDelete = async (id: string) => {
         if (!confirm("本当に削除しますか？")) return
@@ -24,45 +26,63 @@ export default function AdminHomePage() {
     }
 
     useEffect(() => {
-        let unsubscribeSnapshot: (() => void) | null = null
+        let unsubscribeSnapshot: (() => void) | null = null;
+        let unsubscribeUsers: (() => void) | null = null;
 
         const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+            // 🔥 先に全部解除
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+            if (unsubscribeUsers) unsubscribeUsers();
+
             if (!user) {
-                router.push("/login")
-                return
+                router.push("/login");
+                return;
             }
 
-            // 🔐 adminチェック
-            const token = await user.getIdTokenResult()
+            const token = await user.getIdTokenResult();
 
             if (!token.claims.admin) {
-                router.push("/")
-                return
+                router.push("/");
+                return;
             }
 
-            // 👇 全件取得
+            // =========================
+            // snapshot再登録
+            // =========================
             const q = query(
                 collection(db, "structureRequests"),
                 orderBy("createdAt", "desc")
-            )
+            );
 
             unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
                 const list = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
-                })) as StructureRequest[]
+                })) as StructureRequest[];
 
-                setData(list)
-                setLoading(false)
-            })
-        })
+                setData(list);
+                setLoading(false);
+            });
+
+            const qUsers = query(collection(db, "users"));
+
+            unsubscribeUsers = onSnapshot(qUsers, (snapshot) => {
+                const list = snapshot.docs.map(doc => ({
+                    uid: doc.id,
+                    email: doc.data().email
+                }));
+
+                setUsers(list);
+            });
+        });
 
         return () => {
-            if (unsubscribeSnapshot) unsubscribeSnapshot()
-            unsubscribeAuth()
-        }
-    }, [])
-        return (
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
+            if (unsubscribeUsers) unsubscribeUsers(); // ← これ重要🔥
+            unsubscribeAuth();
+        };
+    }, []);
+    return (
         <div className="min-h-screen bg-gray-100 p-10">
 
             {/* ヘッダー */}
@@ -70,6 +90,31 @@ export default function AdminHomePage() {
                 <h1 className="text-3xl font-bold text-gray-800">
                     管理者ダッシュボード
                 </h1>
+            </div>
+
+            <div className="max-w-6xl mx-auto mb-6 flex gap-4 items-center">
+                <select
+                    value={selectedUser}
+                    onChange={(e) => setSelectedUser(e.target.value)}
+                    className="border p-2 rounded"
+                >
+                    <option value="">ユーザー選択</option>
+                    {users.map((u) => (
+                        <option key={u.uid} value={u.uid}>
+                            {u.email}
+                        </option>
+                    ))}
+                </select>
+
+                <button
+                    disabled={!selectedUser}
+                    onClick={() => {
+                        router.push(`/form?targetUserId=${selectedUser}`);
+                    }}
+                    className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-300"
+                >
+                    このユーザーで依頼作成
+                </button>
             </div>
 
             {/* 一覧テーブル */}
