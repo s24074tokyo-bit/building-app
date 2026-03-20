@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
-import { FormDataType, initialForm } from "@/types/form";
+import { FormDataType, initialForm, StatusType } from "@/types/form";
 import { useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -27,10 +27,12 @@ function StructureRequestPage() {
   const [step, setStep] = useState<number | null>(null);
   const [form, setForm] = useState<FormDataType>(initialForm);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  //const [mastered, setMastered] = useState<boolean>(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const status = searchParams.get("status");
 
   const targetUserId = searchParams.get("targetUserId");
 
@@ -108,24 +110,82 @@ function StructureRequestPage() {
   };
 
   const handleSubmit = async () => {
+    let docRef;
+
     try {
       const user = auth.currentUser;
-      
       if (!user) {
         alert("ログインしてください");
         return;
       }
 
-      const docRef = await addDoc(collection(db, "structureRequests"), {
-        ...form,
-        userId: targetUserId ?? user.uid,
-        createdAt: serverTimestamp(),
-        createdBy: user.uid
-      });
+      if (id) {
+        // 🔄 更新（これが正解）
+        const ref = doc(db, "structureRequests", id);
+
+        await updateDoc(ref, {
+          ...form,
+          updatedAt: serverTimestamp(),
+          status: "completed"
+        });
+
+        docRef = ref;
+
+      } else {
+        // 🆕 新規
+        docRef = await addDoc(collection(db, "structureRequests"), {
+          ...form,
+          userId: targetUserId ?? user.uid,
+          createdAt: serverTimestamp(),
+          createdBy: user.uid,
+          status: "completed"
+        });
+      }
 
       console.log("保存成功", docRef.id);
 
-      router.push(`/form/complete?id=${docRef.id}`);
+      router.push(`/form/complete?id=${docRef.id}&status=completed`);
+
+    } catch (error) {
+      console.error("保存エラー", error);
+    }
+  };
+
+  const handlePreserve = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("ログインしてください");
+        return;
+      }
+
+      if (id) {
+        // 更新
+        const ref = doc(db, "structureRequests", id);
+
+        await updateDoc(ref, {
+          ...form,
+          userId: form.userId,
+          createdAt: form.createdAt,
+          createdBy: form.createdBy,
+          updatedAt: serverTimestamp(),
+          status: "in_progress"
+        })
+
+        router.push(`/form/complete?id=${id}&status=in_progress`);
+
+      } else {
+        // 新規
+        const docRef = await addDoc(collection(db, "structureRequests"), {
+          ...form,
+          userId: targetUserId ?? user.uid,
+          createdAt: serverTimestamp(),
+          createdBy: user.uid,
+          status: "in_progress"
+        });
+
+        router.push(`/form/complete?id=${docRef.id}&status=in_progress`);
+      }
 
     } catch (error) {
       console.error("保存エラー", error);
@@ -163,86 +223,103 @@ function StructureRequestPage() {
         )}
 
         {step === 6 && !isAdmin && (
-          <Confirm form={form} isAdmin = {isAdmin}/>
+          <Confirm form={form} isAdmin={isAdmin} />
         )}
       </div>
 
       {/* ===== 下部ナビ（管理者は非表示） ===== */}
-        <div className="mt-auto pt-10 space-y-6">
+      <div className="mt-auto pt-10 space-y-6">
 
-          {/* Stepナビ */}
-          <div className="flex justify-center gap-3 text-sm font-semibold">
-            {[1, 2, 3, 4, 5, 6].map((num) => {
-              const isConfirm = num === 6;
+        {/* Stepナビ */}
+        <div className="flex justify-center gap-3 text-sm font-semibold">
+          {[1, 2, 3, 4, 5, 6].map((num) => {
+            const isConfirm = num === 6;
 
-              return (
-                <button
-                  key={num}
-                  onClick={() => setStep(num)}
-                  className={`
+            return (
+              <button
+                key={num}
+                onClick={() => setStep(num)}
+                className={`
           w-9 h-9
           rounded-full
           flex items-center justify-center
           transition-all duration-200
           ${step === num
-                      ? isConfirm
-                        ? "bg-emerald-600 text-white shadow-md scale-110"
-                        : "bg-blue-600 text-white shadow-md scale-110"
-                      : isConfirm
-                        ? "bg-emerald-200 text-emerald-700 hover:bg-emerald-300"
-                        : "bg-gray-200 text-gray-600 hover:bg-blue-100"
-                    }
+                    ? isConfirm
+                      ? "bg-emerald-600 text-white shadow-md scale-110"
+                      : "bg-blue-600 text-white shadow-md scale-110"
+                    : isConfirm
+                      ? "bg-emerald-200 text-emerald-700 hover:bg-emerald-300"
+                      : "bg-gray-200 text-gray-600 hover:bg-blue-100"
+                  }
         `}
-                >
-                  {isConfirm ? "確認" : num}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* 戻る・次へ */}
-          <div className="flex items-center justify-between">
-
-            {step > 1 ? (
-              <button
-                onClick={() => setStep(step - 1)}
-                className="px-6 py-3 rounded-xl bg-white text-gray-700 border border-gray-300 shadow-sm hover:shadow-md transition-all"
               >
-                ← 戻る
+                {isConfirm ? "確認" : num}
               </button>
-            ) : (
-              <div className="w-28" />
-            )}
-
-            {step >= 1 && step <= 4 && (
-              <button
-                onClick={() => setStep(step + 1)}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md"
-              >
-                次へ →
-              </button>
-            )}
-
-            {step === 5 && (
-              <button
-                onClick={() => setStep(6)}
-                className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md"
-              >
-                依頼書内容を確認
-              </button>
-            )}
-
-            {step === 6 && (
-              <button
-                onClick={handleSubmit}
-                className="px-6 py-3 rounded-xl bg-blue-600 text-white shadow-md"
-              >
-                送信を完了
-              </button>
-            )}
-
-          </div>
+            );
+          })}
         </div>
+
+        <div className="flex items-center justify-center ">
+          <button
+            onClick={handlePreserve}
+            className="
+    px-8 py-3
+    bg-green-500 hover:bg-green-600
+    text-white font-semibold
+    rounded-2xl
+    shadow-md hover:shadow-lg
+    transition-all duration-200
+    active:scale-95
+  "
+          >
+            一時保存をする
+          </button>
+        </div>
+
+        {/* 戻る・次へ */}
+        <div className="flex items-center justify-between">
+
+          {step > 1 ? (
+            <button
+              onClick={() => setStep(step - 1)}
+              className="px-6 py-3 rounded-xl bg-white text-gray-700 border border-gray-300 shadow-sm hover:shadow-md transition-all"
+            >
+              ← 戻る
+            </button>
+          ) : (
+            <div className="w-28" />
+          )}
+
+          {step >= 1 && step <= 4 && (
+            <button
+              onClick={() => setStep(step + 1)}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md"
+            >
+              次へ →
+            </button>
+          )}
+
+          {step === 5 && (
+            <button
+              onClick={() => setStep(6)}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md"
+            >
+              依頼書内容を確認
+            </button>
+          )}
+
+          {step === 6 && (
+            <button
+              onClick={handleSubmit}
+              className="px-6 py-3 rounded-xl bg-blue-600 text-white shadow-md"
+            >
+              送信を完了
+            </button>
+          )}
+
+        </div>
+      </div>
     </div>
   );
 }

@@ -18,6 +18,13 @@ function CompleteContent() {
   const router = useRouter();
   const id = searchParams.get("id");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const status = searchParams.get("status");
+  const message =
+  status === "in_progress"
+    ? "一時保存が完了しました"
+    : status === "completed"
+    ? "依頼書が送信されました"
+    : "";
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -79,7 +86,7 @@ function CompleteContent() {
 
         {/* タイトル */}
         <h1 className="text-2xl md:text-3xl font-semibold text-center text-blue-700 tracking-tight">
-          依頼書が送信されました
+          {message}
         </h1>
 
 

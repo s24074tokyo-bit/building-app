@@ -4,6 +4,8 @@ export type MaterialItem = {
   note: string;
 };
 
+export type StatusType = "in_progress" | "completed";
+
 export type FormDataType = {
   customer: {
     companyName: string;
@@ -111,6 +113,9 @@ export type FormDataType = {
   userId?: string;
   createdAt?: any;
   createdBy?: string;
+
+  status?: StatusType;
+  mastered?: boolean
 };
 
 export const initialForm: FormDataType = {
@@ -223,11 +228,16 @@ export const initialForm: FormDataType = {
 
   userId: undefined,
   createdAt: undefined,
-  createdBy: undefined
+  createdBy: undefined,
+
+  status: undefined,
+  mastered: false
 };
 
 export type StructureRequest = FormDataType & {
   id: string
   createdAt?: any
   createdBy?: string
+  status?: StatusType
+  mastered?: boolean
 }

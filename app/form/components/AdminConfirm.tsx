@@ -436,7 +436,7 @@ function PrintStyle() {
       }
 
       th {
-        background: #b8e1f0;
+        background: #e3f7ff;
         width: 35%;
       }
 
